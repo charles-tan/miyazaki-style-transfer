@@ -2,16 +2,10 @@ import os
 import tensorflow as tf
 os.environ['TFHUB_MODEL_LOAD_FORMAT'] = 'COMPRESSED'
 
-import IPython.display as display
-
-import matplotlib as mpl
-
-import time
-import utils
 
 def vgg_layers(layer_names):
     """ Creates a vgg model that returns a list of intermediate output values."""
-    # Load our model. Load pretrained VGG, trained on imagenet data
+    # Load pretrained VGG, trained on imagenet data
     vgg = tf.keras.applications.VGG19(include_top=False, weights='imagenet')
     vgg.trainable = False
 
@@ -30,13 +24,6 @@ class StyleModel(tf.keras.models.Model):
         self.vgg.trainable = False
         self.style_targets = self.call(tf.constant(style_image))
         style_outputs = self.vgg(style_image*255)
-        for name, output in zip(self.style_layers, style_outputs):
-            print(name)
-            print("  shape: ", output.numpy().shape)
-            print("  min: ", output.numpy().min())
-            print("  max: ", output.numpy().max())
-            print("  mean: ", output.numpy().mean())
-            print()
 
     def call(self, inputs):
         "Expects float input in [0,1]"
@@ -54,11 +41,14 @@ class StyleModel(tf.keras.models.Model):
 
         return style_dict
 
-    def gram_matrix(self, input_tensor):
-        result = tf.linalg.einsum('bijc,bijd->bcd', input_tensor, input_tensor)
-        input_shape = tf.shape(input_tensor)
-        num_locations = tf.cast(input_shape[1]*input_shape[2], tf.float32)
-        return result/(num_locations)
+    # Gram matrix function found here: https://www.geeksforgeeks.org/neural-style-transfer-with-tensorflow/
+    def gram_matrix(self, A):
+        channels = int(A.shape[-1])
+        a = tf.reshape(A, [-1, channels])
+        n = tf.shape(a)[0]
+        gram = tf.matmul(a, a, transpose_a=True)
+        r = gram / tf.cast(n, tf.float32)
+        return r
 
     def style_loss_calc(self, outputs):
         style_outputs = outputs

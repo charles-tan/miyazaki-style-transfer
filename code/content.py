@@ -7,7 +7,7 @@ os.environ['TFHUB_MODEL_LOAD_FORMAT'] = 'COMPRESSED'
 # Set up the content model
 def vgg_model(layer_names):
     """ Creates a vgg model that returns a list of intermediate output values."""
-    # Load our model. Load pretrained VGG, trained on imagenet data
+    # Load pretrained VGG, trained on imagenet data
     vgg = tf.keras.applications.VGG19(include_top=False, weights='imagenet')
     vgg.trainable = False
     outputs = [vgg.get_layer(name).output for name in layer_names]
@@ -25,13 +25,6 @@ class ContentModel(tf.keras.models.Model):
         self.vgg.trainable = False
         self.content_targets = self.call(content_image)
         style_outputs = self.vgg(content_image*255)
-        for name, output in zip(self.content_layers, style_outputs):
-            print(name)
-            print("  shape: ", output.numpy().shape)
-            print("  min: ", output.numpy().min())
-            print("  max: ", output.numpy().max())
-            print("  mean: ", output.numpy().mean())
-            print()
 
     def call(self, inputs):
         "Expects float input in [0,1]"
