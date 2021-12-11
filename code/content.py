@@ -1,19 +1,10 @@
 import os
 import tensorflow as tf
+from vgg import vgg_layers
 # Load compressed models from tensorflow_hub
 os.environ['TFHUB_MODEL_LOAD_FORMAT'] = 'COMPRESSED'
 
 
-# Set up the content model
-def vgg_model(layer_names):
-    """ Creates a vgg model that returns a list of intermediate output values."""
-    # Load pretrained VGG, trained on imagenet data
-    vgg = tf.keras.applications.VGG19(include_top=False, weights='imagenet')
-    vgg.trainable = False
-    outputs = [vgg.get_layer(name).output for name in layer_names]
-    model = tf.keras.Model([vgg.input], outputs)
-
-    return model
 
 class ContentModel(tf.keras.models.Model):
     def __init__(self, content_image, content_layers):
@@ -21,7 +12,7 @@ class ContentModel(tf.keras.models.Model):
         self.content_image = content_image
         self.content_layers = content_layers
         self.num_content_layers = len(self.content_layers)
-        self.vgg = vgg_model(content_layers)
+        self.vgg = vgg_layers(content_layers)
         self.vgg.trainable = False
         self.content_targets = self.call(content_image)
         style_outputs = self.vgg(content_image*255)
