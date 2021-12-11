@@ -51,11 +51,6 @@ def clip_0_1(image):
 
 
 
-
-
-
-
-
 # Set up the content model
 def vgg_model(layer_names):
     """ Creates a vgg model that returns a list of intermediate output values."""
@@ -68,11 +63,22 @@ def vgg_model(layer_names):
     return model
 
 class ContentModel(tf.keras.models.Model):
-    def __init__(self, content_layers):
+    def __init__(self, content_image, content_layers):
         super(ContentModel, self).__init__()
-        self.vgg = vgg_model(content_layers)
+        self.content_image = content_image
         self.content_layers = content_layers
+        self.num_content_layers = len(self.content_layers)
+        self.vgg = vgg_model(content_layers)
         self.vgg.trainable = False
+        self.content_targets = self.call(content_image)
+        style_outputs = self.vgg(content_image*255)
+        for name, output in zip(self.content_layers, style_outputs):
+            print(name)
+            print("  shape: ", output.numpy().shape)
+            print("  min: ", output.numpy().min())
+            print("  max: ", output.numpy().max())
+            print("  mean: ", output.numpy().mean())
+            print()
 
     def call(self, inputs):
         "Expects float input in [0,1]"
@@ -81,52 +87,48 @@ class ContentModel(tf.keras.models.Model):
         content_outputs = self.vgg(preprocessed_input)
         content_dict = {content_name: value for content_name, value in zip(self.content_layers, [content_outputs])}
 
-        return {'content': content_dict}
+        return content_dict
 
-content_layers = ['block5_conv2'] 
-content_extractor = ContentModel(content_layers)
-num_content_layers = len(content_layers)
-content_image = load_img('../Content_images/college_hill.png')
-content_image = tf.image.resize(content_image, [200,200])
-style_image = load_img('../style_images/kokurikozaka049.jpg')
-style_image = tf.image.resize(style_image, [200,200])
+    def content_loss_calc(self, outputs):
+        content_outputs = outputs
+        content_loss = tf.add_n([tf.reduce_mean((content_outputs[name]-self.content_targets[name])**2) 
+                                for name in content_outputs.keys()])
+        content_loss /= self.num_content_layers
+        return content_loss
 
-# # Testing
-# results = content_extractor(tf.constant(content_image))
+if __name__ == '__main__':
+    content_layers = ['block5_conv2'] 
+    content_extractor = ContentModel(content_layers)
+    num_content_layers = len(content_layers)
+    content_image = load_img('../Content_images/college_hill.png')
+    content_image = tf.image.resize(content_image, [200,200])
+    style_image = load_img('../style_images/kokurikozaka049.jpg')
+    style_image = tf.image.resize(style_image, [200,200])
 
-# print("Contents:")
-# for name, output in sorted(results['content'].items()):
-#   print("  ", name)
-#   print("    shape: ", output.numpy().shape)
-#   print("    min: ", output.numpy().min())
-#   print("    max: ", output.numpy().max())
-#   print("    mean: ", output.numpy().mean())
+    # # Testing
+    # results = content_extractor(tf.constant(content_image))
 
-# Gradient Descent
-content_targets = content_extractor(content_image)['content']
-# image = tf.Variable(style_image)
-image = tf.Variable(tf.random.uniform(content_image.shape, minval=0, maxval=None, dtype=tf.dtypes.float32, seed=None, name=None))
-optimizer = tf.optimizers.Adam(learning_rate=0.02, beta_1=0.99, epsilon=1e-1)
-style_weight=1e-2
-content_weight=1e4
+    # print("Contents:")
+    # for name, output in sorted(results['content'].items()):
+    #   print("  ", name)
+    #   print("    shape: ", output.numpy().shape)
+    #   print("    min: ", output.numpy().min())
+    #   print("    max: ", output.numpy().max())
+    #   print("    mean: ", output.numpy().mean())
 
-def content_loss_calc(outputs):
-    content_outputs = outputs['content']
-    content_loss = tf.add_n([tf.reduce_mean((content_outputs[name]-content_targets[name])**2) 
-                             for name in content_outputs.keys()])
-    content_loss *= content_weight / num_content_layers
-    return content_loss
+    # Gradient Descent
+    content_targets = content_extractor(content_image)['content']
+    # image = tf.Variable(style_image)
+    image = tf.Variable(tf.random.uniform(content_image.shape, minval=0, maxval=None, dtype=tf.dtypes.float32, seed=None, name=None))
+    optimizer = tf.optimizers.Adam(learning_rate=0.02, beta_1=0.99, epsilon=1e-1)
+    style_weight=1e-2
+    content_weight=1e4
 
-@tf.function()
-def train_step(image, style_loss):
-  with tf.GradientTape() as tape:
-    outputs = content_extractor(image)
-    content_loss = content_loss_calc(outputs)
-    loss = content_loss + style_loss
-  grad = tape.gradient(loss, image)
-  optimizer.apply_gradients([(grad, image)])
-  image.assign(clip_0_1(image))
+    @tf.function()
+    def train_step(image, style_loss):
+        w
+        sign(clip_0_1(image))
 
-for i in range(1000): 
-    train_step(image, 0)
-tensor_to_image(image)
+    for i in range(1000): 
+        train_step(image, 0)
+    tensor_to_image(image)
