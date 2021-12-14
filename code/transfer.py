@@ -25,8 +25,8 @@ def train_step(image, content_model, style_model):
 
 
 if __name__ == '__main__':
-    style_path = 'style_images/ponyo013.jpeg'
-    content_path = 'content_images/sayles.jpeg'
+    style_path = 'style_images/kokurikozaka049.jpg'
+    content_path = 'content_images/college_hill.png'
     style_path_name = re.split('\.|/', style_path)[-2]
     content_path_name = re.split('\.|/', content_path)[-2]
     style_image = utils.load_img(style_path)
@@ -48,15 +48,24 @@ if __name__ == '__main__':
     #                 'conv3_block1_1_conv',
     #                 'conv4_block1_1_conv',
     #                 'conv5_block1_1_conv']
-    style_layers = ['conv5_block1_1_conv',
-                    'conv5_block1_2_conv',
-                    'conv5_block1_3_conv',
-                    'conv5_block2_1_conv',
-                    'conv2_block2_2_conv',
-                    'conv5_block2_3_conv',
-                    'conv5_block3_1_conv',
-                    'conv5_block3_2_conv',
-                    'conv5_block3_3_conv']
+    # style_layers = ['conv5_block1_1_conv',
+    #                 'conv5_block1_2_conv',
+    #                 'conv5_block1_3_conv',
+    #                 'conv5_block2_1_conv',
+    #                 'conv2_block2_2_conv',
+    #                 'conv5_block2_3_conv',
+    #                 'conv5_block3_1_conv',
+    #                 'conv5_block3_2_conv',
+    #                 'conv5_block3_3_conv']
+    style_layers = ['conv3_block1_1_conv',
+                    'conv3_block1_2_conv',
+                    'conv3_block1_3_conv',
+                    'conv3_block2_1_conv',
+                    'conv3_block2_2_conv',
+                    'conv3_block2_3_conv',
+                    'conv3_block3_1_conv',
+                    'conv3_block3_2_conv',
+                    'conv3_block3_3_conv']
 
     style_model = StyleModel(style_image, style_layers)
     content_model = ContentModel(content_image, content_layers)
