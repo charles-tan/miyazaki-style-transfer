@@ -33,12 +33,21 @@ if __name__ == '__main__':
     content_image = utils.load_img(content_path)
     save_dir = 'results/'
 
-    content_layers = ['block5_conv2']
-    style_layers = ['block1_conv1', 
-                    'block2_conv1',
-                    'block3_conv1',
-                    'block4_conv1',
-                    'block5_conv1']
+    # vgg19
+    # content_layers = ['block5_conv2']
+    # style_layers = ['block1_conv1', 
+    #                 'block2_conv1',
+    #                 'block3_conv1',
+    #                 'block4_conv1',
+    #                 'block5_conv1']
+
+    # resnet50
+    content_layers = ['conv5_block3_3_conv']
+    style_layers = ['conv1_conv', 
+                    'conv2_block1_1_conv',
+                    'conv3_block1_1_conv',
+                    'conv4_block1_1_conv',
+                    'conv5_block1_1_conv']
 
     style_model = StyleModel(style_image, style_layers)
     content_model = ContentModel(content_image, content_layers)

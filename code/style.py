@@ -1,6 +1,6 @@
 import os
 import tensorflow as tf
-from vgg import vgg_layers
+from classifier_model import classifier_layers
 os.environ['TFHUB_MODEL_LOAD_FORMAT'] = 'COMPRESSED'
 
 
@@ -10,16 +10,25 @@ class StyleModel(tf.keras.models.Model):
         self.style_image = style_image
         self.style_layers = style_layers
         self.num_style_layers = len(self.style_layers)
-        self.vgg = vgg_layers(self.style_layers)
-        self.vgg.trainable = False
+        self.classifier = classifier_layers(self.style_layers)
+        self.classifier.trainable = False
         self.style_targets = self.call(tf.constant(style_image))
-        style_outputs = self.vgg(style_image*255)
+        style_outputs = self.classifier(style_image*255)
 
     def call(self, inputs):
         "Expects float input in [0,1]"
         inputs = inputs*255.0
-        preprocessed_input = tf.keras.applications.vgg19.preprocess_input(inputs)
-        outputs = self.vgg(preprocessed_input)
+
+        # vgg16
+        # preprocessed_input = tf.keras.applications.vgg16.preprocess_input(inputs)
+
+        # vgg 19
+        # preprocessed_input = tf.keras.applications.vgg19.preprocess_input(inputs)
+
+        # resnet50 / resnet101
+        preprocessed_input = tf.keras.applications.resnet50.preprocess_input(inputs)
+
+        outputs = self.classifier(preprocessed_input)
         style_outputs = (outputs[:self.num_style_layers])
 
         style_outputs = [self.gram_matrix(style_output)
