@@ -41,12 +41,37 @@ if __name__ == '__main__':
                     'block5_conv1']
 
     # resnet50
+<<<<<<< HEAD
     # content_layers = ['conv5_block3_3_conv']
+=======
+    content_layers = ['conv5_block3_3_conv']
+>>>>>>> fba66c70a3bed19a4635706a06173ffbb4e51987
     # style_layers = ['conv1_conv', 
     #                 'conv2_block1_1_conv',
     #                 'conv3_block1_1_conv',
     #                 'conv4_block1_1_conv',
     #                 'conv5_block1_1_conv']
+<<<<<<< HEAD
+=======
+    # style_layers = ['conv5_block1_1_conv',
+    #                 'conv5_block1_2_conv',
+    #                 'conv5_block1_3_conv',
+    #                 'conv5_block2_1_conv',
+    #                 'conv2_block2_2_conv',
+    #                 'conv5_block2_3_conv',
+    #                 'conv5_block3_1_conv',
+    #                 'conv5_block3_2_conv',
+    #                 'conv5_block3_3_conv']
+    style_layers = ['conv3_block1_1_conv',
+                    'conv3_block1_2_conv',
+                    'conv3_block1_3_conv',
+                    'conv3_block2_1_conv',
+                    'conv3_block2_2_conv',
+                    'conv3_block2_3_conv',
+                    'conv3_block3_1_conv',
+                    'conv3_block3_2_conv',
+                    'conv3_block3_3_conv']
+>>>>>>> fba66c70a3bed19a4635706a06173ffbb4e51987
 
     style_model = StyleModel(style_image, style_layers)
     content_model = ContentModel(content_image, content_layers)
@@ -82,7 +107,8 @@ if __name__ == '__main__':
             print(".", end='', flush=True)
         display.clear_output(wait=True)
         utils.tensor_to_image(image, file_name=(save_dir + '/' + style_path_name + '_' + content_path_name + '_' + str(n) + ".jpg"))
-        utils.tensor_to_image(image, show=True)
+        # utils.tensor_to_image(image, show=True)
+        # utils.tensor_to_image(image, file_name=(save_dir + '/' + style_path_name + '_' + content_path_name + '_' + 'resnet' + '_' + str(n) + ".jpg"))
         print("Train step: {}".format(step))
         print("content_loss", content_loss, "style_loss", style_loss, "variation_loss", variation_loss, "total_loss", loss)
 
