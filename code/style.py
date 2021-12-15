@@ -20,13 +20,13 @@ class StyleModel(tf.keras.models.Model):
         inputs = inputs*255.0
 
         # vgg16
-        # preprocessed_input = tf.keras.applications.vgg16.preprocess_input(inputs)
+        preprocessed_input = tf.keras.applications.vgg16.preprocess_input(inputs)
 
         # vgg 19
         # preprocessed_input = tf.keras.applications.vgg19.preprocess_input(inputs)
 
         # resnet50 / resnet101
-        preprocessed_input = tf.keras.applications.resnet50.preprocess_input(inputs)
+        # preprocessed_input = tf.keras.applications.resnet50.preprocess_input(inputs)
 
         outputs = self.classifier(preprocessed_input)
         style_outputs = (outputs[:self.num_style_layers])

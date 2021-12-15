@@ -20,13 +20,13 @@ class ContentModel(tf.keras.models.Model):
         "Expects float input in [0,1]"
         inputs = inputs*255.0
         # vgg16
-        # preprocessed_input = tf.keras.applications.vgg16.preprocess_input(inputs)
+        preprocessed_input = tf.keras.applications.vgg16.preprocess_input(inputs)
 
         # vgg 19
         # preprocessed_input = tf.keras.applications.vgg19.preprocess_input(inputs)
 
         # resnet50 / resnet101
-        preprocessed_input = tf.keras.applications.resnet50.preprocess_input(inputs)
+        # preprocessed_input = tf.keras.applications.resnet50.preprocess_input(inputs)
 
         content_outputs = self.classifier(preprocessed_input)
         content_dict = {content_name: value for content_name, value in zip(self.content_layers, [content_outputs])}

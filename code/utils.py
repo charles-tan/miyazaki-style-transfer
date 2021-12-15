@@ -2,6 +2,7 @@ import tensorflow as tf
 
 import numpy as np
 import PIL.Image
+import matplotlib.pyplot as plt
 
 def tensor_to_image(tensor, file_name="", show=False):
     tensor = tensor*255
@@ -14,7 +15,7 @@ def tensor_to_image(tensor, file_name="", show=False):
         tf.io.write_file(file_name, t)
 
 def load_img(path_to_img):
-    max_dim = 750
+    max_dim = 512
 
     img = tf.io.read_file(path_to_img)
     img = tf.image.decode_image(img, channels=3)
@@ -30,3 +31,9 @@ def load_img(path_to_img):
     img = img[tf.newaxis, :]
     return img
 
+def show_plot(vals, title=""):
+    x = np.arange(len(vals))
+    y = np.asarray(vals)
+    plt.plot(x,y)
+    plt.title(title)
+    plt.show()
