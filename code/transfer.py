@@ -4,8 +4,7 @@ import utils
 
 import re
 import tensorflow as tf
-
-import IPython.display as display
+import numpy as np
 
 @tf.function()
 def train_step(image, content_model, style_model, style_weight=1e-2, content_weight=1e4, variation_weight=30):
@@ -83,15 +82,14 @@ if __name__ == '__main__':
     for n in range(epochs):
         for m in range(steps_per_epoch):
             step += 1
-            content_loss, style_loss, variation_loss, loss = train_step(image, content_model, style_model, style_weight=1e-2, content_weight=1e4, variation_weight=100)
+            content_loss, style_loss, variation_loss, loss = train_step(image, content_model, style_model, style_weight=1e-2, content_weight=1e4, variation_weight=30)
             content_loss_list.append(content_loss)
             style_loss_list.append(style_loss)
             variation_loss_list.append(variation_loss)
             loss_list.append(loss)
             print(".", end='', flush=True)
-        display.clear_output(wait=True)
-        utils.tensor_to_image(image, file_name=(save_dir + '/' + style_path_name + '_' + content_path_name + '_' + str(n) + ".jpg"))
-        # utils.tensor_to_image(image, show=True)
+        # utils.tensor_to_image(image, file_name=(save_dir + '/' + style_path_name + '_' + content_path_name + '_' + str(n) + ".jpg"))
+        utils.tensor_to_image(image, show=True)
         # utils.tensor_to_image(image, file_name=(save_dir + '/' + style_path_name + '_' + content_path_name + '_' + 'resnet' + '_' + str(n) + ".jpg"))
         print("Train step: {}".format(step))
         print("content_loss", content_loss, "style_loss", style_loss, "variation_loss", variation_loss, "total_loss", loss)
@@ -99,27 +97,7 @@ if __name__ == '__main__':
     end = time.time()
     print("Total time: {:.1f}".format(end-start))
     
-    import numpy as np
     utils.show_plot(np.log(content_loss_list), "log content loss")
     utils.show_plot(np.log(style_loss_list), "log style loss")
     utils.show_plot(np.log(variation_loss_list), "log variation loss")
     utils.show_plot(np.log(loss_list), "log total weighted loss")
-
-    # for n in range(1):
-    #     for m in range(steps_per_epoch):
-    #         step += 1
-    #         content_loss, style_loss, variation_loss, loss = train_step(image, content_model, style_model, style_weight=0, content_weight=1e4)
-    #         content_loss_list.append(content_loss)
-    #         style_loss_list.append(style_loss)
-    #         variation_loss_list.append(variation_loss)
-    #         loss_list.append(loss)
-    #         print(".", end='', flush=True)
-    #     display.clear_output(wait=True)
-    #     # utils.tensor_to_image(image, file_name=(save_dir + '/' + style_path_name + '_' + content_path_name + '_' + str(n) + ".jpg"))
-    #     utils.tensor_to_image(image, show=True)
-    #     print("Train step: {}".format(step))
-    #     print("content_loss", content_loss, "style_loss", style_loss, "variation_loss", variation_loss, "total_loss", loss)
-
-    
-    # end = time.time()
-    # print("Total time: {:.1f}".format(end-start))
